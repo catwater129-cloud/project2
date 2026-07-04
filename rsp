@@ -1,0 +1,135 @@
+import streamlit as st
+import random
+
+st.set_page_config(page_title="가위바위보", page_icon="✊")
+
+# ---------------- CSS ----------------
+st.markdown("""
+<style>
+.stApp{
+    background-color:#0B1F4D;
+    color:white;
+}
+
+h1,h2,h3,p,div{
+    color:white !important;
+}
+
+.stButton>button{
+    width:100%;
+    background:white;
+    color:black !important;
+    font-size:22px;
+    font-weight:bold;
+    border-radius:12px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ---------------- 상태 저장 ----------------
+if "page" not in st.session_state:
+    st.session_state.page = "home"
+
+if "my_choice" not in st.session_state:
+    st.session_state.my_choice = ""
+
+# ---------------- 데이터 ----------------
+emoji = {
+    "가위":"✌️",
+    "바위":"✊",
+    "보":"✋"
+}
+
+# ---------------- 승패 판정 ----------------
+def result(me, com):
+
+    if me == com:
+        return "😄 비겼습니다!"
+
+    if (me=="가위" and com=="보") or \
+       (me=="바위" and com=="가위") or \
+       (me=="보" and com=="바위"):
+        return "🎉 당신이 이겼습니다!"
+
+    return "😢 컴퓨터가 이겼습니다!"
+
+# =======================
+# 1화면
+# =======================
+if st.session_state.page=="home":
+
+    st.title("✊✌️✋ 가위바위보 게임")
+
+    if st.button("시작하기"):
+        st.session_state.page="select"
+        st.rerun()
+
+# =======================
+# 2화면
+# =======================
+elif st.session_state.page=="select":
+
+    st.header("무엇을 낼까요?")
+
+    c1,c2,c3=st.columns(3)
+
+    with c1:
+        if st.button("✌️\n가위"):
+            st.session_state.my_choice="가위"
+            st.session_state.page="game"
+            st.rerun()
+
+    with c2:
+        if st.button("✊\n바위"):
+            st.session_state.my_choice="바위"
+            st.session_state.page="game"
+            st.rerun()
+
+    with c3:
+        if st.button("✋\n보"):
+            st.session_state.my_choice="보"
+            st.session_state.page="game"
+            st.rerun()
+
+    st.write("")
+
+    if st.button("게임 그만하기"):
+        st.session_state.page="home"
+        st.rerun()
+
+# =======================
+# 3화면
+# =======================
+elif st.session_state.page=="game":
+
+    computer=random.choice(["가위","바위","보"])
+
+    st.header("게임 결과")
+
+    col1,col2=st.columns(2)
+
+    with col1:
+        st.subheader("😊 나")
+        st.markdown(f"# {emoji[st.session_state.my_choice]}")
+        st.write(st.session_state.my_choice)
+
+    with col2:
+        st.subheader("💻 컴퓨터")
+        st.markdown(f"# {emoji[computer]}")
+        st.write(computer)
+
+    st.markdown("---")
+
+    st.header(result(st.session_state.my_choice, computer))
+
+    c1,c2=st.columns(2)
+
+    with c1:
+        if st.button("다시 하기"):
+            st.session_state.page="select"
+            st.rerun()
+
+    with c2:
+        if st.button("게임 그만하기"):
+            st.session_state.page="home"
+            st.rerun()
